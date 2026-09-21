@@ -21,6 +21,7 @@
       --s4: #d98cff;
       --s5: #ff7e93;
       --s6: #67d4d9;
+      --s7: #b7c9ff;
       --warning: #f6b860;
     }
     * { box-sizing: border-box; }
@@ -45,6 +46,7 @@
     .chart-wrap { border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 94%, transparent); border-radius: 14px; padding: 12px 12px 8px; }
     svg { display: block; width: 100%; height: auto; overflow: visible; }
     .axis path, .axis line { stroke: var(--border); }
+    .axis-line { stroke: var(--border); }
     .axis, .axis-title, .value-label { fill: var(--foreground); font-size: 12px; }
     .grid-line { stroke: var(--grid); stroke-width: 1; stroke-dasharray: 3 4; opacity: .65; }
     .frame { fill: none; stroke: var(--border); }
@@ -76,6 +78,9 @@
       .timeline { overflow-x: auto; }
       .timeline-track { min-width: 620px; }
     }
+    @media (min-width: 600px) and (max-width: 760px) {
+      .split-row { grid-column: span 6; }
+    }
   </style>
 </head>
 <body>
@@ -96,16 +101,16 @@
         <div class="single-point">September 18 snapshot: 93.78M verified from the live city/profile screens.</div>
       </article>
 
-      <article class="panel">
-        <div class="panel-head"><h2>Power composition</h2><span class="note">side-by-side snapshots</span></div>
-        <div class="chart-wrap"><svg id="breakdown-chart" role="img" aria-label="Power breakdown comparison"></svg><div class="legend" id="breakdown-legend"></div></div>
-        <div class="single-point">September 18 breakdown: categories sum exactly to the profile total of 93.779M.</div>
+      <article class="panel split-row">
+        <div class="panel-head"><h2>Troop power &amp; growth</h2><span class="note">power + total roster · dual axis</span></div>
+        <div class="chart-wrap"><svg id="troop-chart" role="img" aria-label="Troop power and total troop roster over time"></svg><div class="legend" id="troop-legend"></div></div>
+        <div class="single-point">September 18: 47.996M troop power · 676,003 total troops; 473,213 currently in town, 0/209.3K injured, and 6/6 marches active.</div>
       </article>
 
-      <article class="panel">
-        <div class="panel-head"><h2>Troop growth</h2><span class="note">journal-recorded totals</span></div>
-        <div class="chart-wrap"><svg id="troop-chart" role="img" aria-label="Total troop roster over time"></svg><div class="legend" id="troop-legend"></div></div>
-        <div class="single-point">September 18 total roster: 676,003 troops; 473,213 currently in town, 0/209.3K injured, and 6/6 marches active.</div>
+      <article class="panel split-row">
+        <div class="panel-head"><h2>Power breakdown, troops excluded</h2><span class="note">non-troop power over time</span></div>
+        <div class="chart-wrap"><svg id="other-power-chart" role="img" aria-label="Non-troop power over time"></svg><div class="legend" id="other-power-legend"></div></div>
+        <div class="single-point">September 18 breakdown: categories sum exactly to the profile total of 93.779M.</div>
       </article>
 
       <article class="panel wide">
@@ -145,7 +150,7 @@
       const tooltip = document.getElementById('tooltip');
       const dates = ['2026-07-15', '2026-08-11', '2026-09-06', '2026-09-12', '2026-09-18'];
       const labels = ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18'];
-      const colors = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)'];
+      const colors = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)'];
       const cssColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name.replace('var(', '').replace(')', '')).trim();
       const fmt = (value) => value == null ? '—' : Number(value).toLocaleString('en-US');
       const fmtM = (value) => value == null ? '—' : (value / 1e6).toFixed(2) + 'M';
@@ -163,14 +168,15 @@
         return gaps.length ? Math.min(...gaps) : fallback;
       }
 
-      function svgBase(svg, width = 760, height = 270) {
+      function svgBase(svg, width = 760, height = 270, rightPadding = 24) {
         svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
         svg.innerHTML = '';
+        const x0 = 92; const x1 = width - rightPadding; const y0 = 18; const y1 = height - 40;
         const frame = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         frame.setAttribute('class', 'frame'); frame.setAttribute('data-chart-frame', 'true');
-        frame.setAttribute('x', '92'); frame.setAttribute('y', '18'); frame.setAttribute('width', width - 116); frame.setAttribute('height', height - 58);
+        frame.setAttribute('x', x0); frame.setAttribute('y', y0); frame.setAttribute('width', x1 - x0); frame.setAttribute('height', y1 - y0);
         svg.appendChild(frame);
-        return { width, height, x0: 92, x1: width - 24, y0: 18, y1: height - 40 };
+        return { width, height, x0, x1, y0, y1 };
       }
       function text(svg, x, y, value, cls = '') {
         const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -189,15 +195,20 @@
         const pad = (max - min || Math.max(1, max * .08)) * .14;
         return [Math.max(floor, min - pad), max + pad];
       }
-      function addAxes(svg, g, xPositions, yTicks, yScale, yTitle, xTitle = 'Check-in date', xTickLabels = labels, tickFormat = (v) => String(v)) {
+      function addAxes(svg, g, xPositions, yTicks, yScale, yTitle, xTitle = 'Check-in date', xTickLabels = labels, tickFormat = (v) => String(v), yColor = null) {
         xPositions.forEach((x, i) => { line(svg, x, g.y0, x, g.y1, 'grid-line'); const tick = text(svg, x, g.y1 + 22, xTickLabels[i] || '', 'axis'); tick.setAttribute('text-anchor', 'middle'); });
-        yTicks.forEach((tick) => { const y = yScale(tick); line(svg, g.x0, y, g.x1, y, 'grid-line'); const label = text(svg, g.x0 - 10, y + 4, tickFormat(tick), 'axis'); label.setAttribute('text-anchor', 'end'); });
+        yTicks.forEach((tick) => { const y = yScale(tick); line(svg, g.x0, y, g.x1, y, 'grid-line'); const label = text(svg, g.x0 - 10, y + 4, tickFormat(tick), 'axis'); label.setAttribute('text-anchor', 'end'); if (yColor) label.setAttribute('fill', yColor); });
         text(svg, (g.x0 + g.x1) / 2, g.height - 5, xTitle, 'axis-title');
-        const y = text(svg, 24, (g.y0 + g.y1) / 2, yTitle, 'axis-title'); y.setAttribute('text-anchor', 'middle'); y.setAttribute('transform', `rotate(-90 24 ${(g.y0 + g.y1) / 2})`);
+        const y = text(svg, 24, (g.y0 + g.y1) / 2, yTitle, 'axis-title'); y.setAttribute('text-anchor', 'middle'); y.setAttribute('transform', `rotate(-90 24 ${(g.y0 + g.y1) / 2})`); if (yColor) y.setAttribute('fill', yColor);
+      }
+      function addRightAxis(svg, g, yTicks, yScale, yTitle, tickFormat, color) {
+        line(svg, g.x1, g.y0, g.x1, g.y1, 'axis-line');
+        yTicks.forEach((tick) => { const y = yScale(tick); const label = text(svg, g.x1 + 10, y + 4, tickFormat(tick), 'axis'); label.setAttribute('fill', color); });
+        const y = text(svg, g.x1 + 42, (g.y0 + g.y1) / 2, yTitle, 'axis-title'); y.setAttribute('fill', color); y.setAttribute('text-anchor', 'middle'); y.setAttribute('transform', `rotate(90 ${g.x1 + 42} ${(g.y0 + g.y1) / 2})`);
       }
       function legend(containerId, series, onToggle) {
         const el = document.getElementById(containerId); el.innerHTML = '';
-        series.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(s.visible !== false)); b.innerHTML = `<span class="swatch" style="background:${colors[i % colors.length]}"></span>${s.name}`; b.addEventListener('click', () => { s.visible = s.visible === false; b.setAttribute('aria-pressed', String(s.visible)); onToggle(); }); el.appendChild(b); });
+        series.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(s.visible !== false)); b.innerHTML = `<span class="swatch" style="background:${colors[(s.colorIndex ?? i) % colors.length]}"></span>${s.name}`; b.addEventListener('click', () => { s.visible = s.visible === false; b.setAttribute('aria-pressed', String(s.visible)); onToggle(); }); el.appendChild(b); });
       }
       function showTooltip(event, title, rows) {
         tooltip.innerHTML = `<strong>${title}</strong>` + rows.map((r) => `<div class="tooltip-row"><span>${r[0]}</span><strong>${r[1]}</strong></div>`).join('');
@@ -213,18 +224,27 @@
           series.forEach((s, si) => {
             if (s.visible === false) return;
             const pts = s.values.map((v, i) => v == null ? null : [xPositions[i], y(v)]).filter(Boolean);
-            if (pts.length > 1) { const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('class', 'series-line'); path.setAttribute('stroke', colors[si % colors.length]); path.setAttribute('d', pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ')); svg.appendChild(path); }
-            s.values.forEach((v, i) => { if (v == null) return; const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('class', 'point'); c.setAttribute('cx', xPositions[i]); c.setAttribute('cy', y(v)); c.setAttribute('r', '5'); c.setAttribute('fill', colors[si % colors.length]); c.addEventListener('pointerenter', (e) => showTooltip(e, dateLabel(i), [[s.name, options.format ? options.format(v) : fmt(v)]])); c.addEventListener('pointerleave', hideTooltip); svg.appendChild(c); });
+            const color = colors[(s.colorIndex ?? si) % colors.length];
+            if (pts.length > 1) { const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('class', 'series-line'); path.setAttribute('stroke', color); path.setAttribute('d', pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ')); svg.appendChild(path); }
+            s.values.forEach((v, i) => { if (v == null) return; const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('class', 'point'); c.setAttribute('cx', xPositions[i]); c.setAttribute('cy', y(v)); c.setAttribute('r', '5'); c.setAttribute('fill', color); c.addEventListener('pointerenter', (e) => showTooltip(e, dateLabel(i), [[s.name, options.format ? options.format(v) : fmt(v)]])); c.addEventListener('pointerleave', hideTooltip); svg.appendChild(c); });
           });
           if (options.missingLast && series.every((s) => s.values[s.values.length - 1] == null)) { const missing = text(svg, xPositions[xPositions.length - 1], g.y1 - 10, options.missingLast, 'value-label'); missing.setAttribute('text-anchor', 'middle'); missing.setAttribute('fill', 'var(--warning)'); }
-          const hit = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); hit.setAttribute('x', g.x0); hit.setAttribute('y', g.y0); hit.setAttribute('width', g.x1 - g.x0); hit.setAttribute('height', g.y1 - g.y0); hit.setAttribute('fill', 'transparent'); hit.setAttribute('data-chart-hit', 'true'); hit.addEventListener('pointermove', (e) => { const rect = svg.getBoundingClientRect(); const px = e.clientX - rect.left; const viewX = px * 760 / rect.width; let nearest = 0; xPositions.forEach((xv, i) => { if (Math.abs(xv - viewX) < Math.abs(xPositions[nearest] - viewX)) nearest = i; }); const rows = series.filter((s) => s.visible !== false && s.values[nearest] != null).map((s) => [s.name, options.format ? options.format(s.values[nearest]) : fmt(s.values[nearest])]); showTooltip(e, dateLabel(nearest), rows); }); hit.addEventListener('pointerleave', hideTooltip); svg.appendChild(hit);
+          const hit = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); hit.setAttribute('x', g.x0); hit.setAttribute('y', g.y0); hit.setAttribute('width', g.x1 - g.x0); hit.setAttribute('height', g.y1 - g.y0); hit.setAttribute('fill', 'transparent'); hit.setAttribute('data-chart-hit', 'true'); hit.addEventListener('pointermove', (e) => { const rect = svg.getBoundingClientRect(); const px = e.clientX - rect.left; const viewX = px * g.width / rect.width; let nearest = 0; xPositions.forEach((xv, i) => { if (Math.abs(xv - viewX) < Math.abs(xPositions[nearest] - viewX)) nearest = i; }); const rows = series.filter((s) => s.visible !== false && s.values[nearest] != null).map((s) => [s.name, options.format ? options.format(s.values[nearest]) : fmt(s.values[nearest])]); showTooltip(e, dateLabel(nearest), rows); }); hit.addEventListener('pointerleave', hideTooltip); svg.appendChild(hit);
         }; legend(legendId, series, draw); draw(); window.addEventListener('resize', draw);
       }
-      function barChart(id, legendId, series, options = {}) {
-        const svg = document.getElementById(id); const draw = () => {
-          const g = svgBase(svg, 760, options.height || 270); const count = options.categories.length; const preliminaryPositions = xPositionsFor(g, count, options.timeValues); const groupW = minimumGap(preliminaryPositions, (g.x1 - g.x0) / Math.max(1, count)); const visible = series.filter((s) => s.visible !== false); const barW = Math.min(90, groupW * .72 / Math.max(1, visible.length)); const edgePadding = options.timeValues ? (barW * visible.length) / 2 : 0; const xPositions = xPositionsFor(g, count, options.timeValues, edgePadding); const all = series.flatMap((s) => s.values).filter((v) => v != null); const [d0, d1] = options.domain || padded(all, 0); const y = scale(d0, d1, g.y1, g.y0); const ticks = options.ticks || [0, d1 / 2, d1].map((v) => Number(v.toFixed(options.decimals || 0))); addAxes(svg, g, xPositions, ticks, y, options.yTitle || 'Value', options.xTitle || 'Snapshot', options.categories, options.tickFormat || ((v) => String(v)));
-          series.forEach((s, si) => { if (s.visible === false) return; const vi = visible.indexOf(s); s.values.forEach((v, i) => { if (v == null) return; const x = xPositions[i] + (vi - (visible.length - 1) / 2) * barW; const top = y(v); const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); rect.setAttribute('x', x - barW / 2); rect.setAttribute('y', top); rect.setAttribute('width', barW - 3); rect.setAttribute('height', g.y1 - top); rect.setAttribute('rx', '4'); rect.setAttribute('fill', colors[si % colors.length]); rect.setAttribute('opacity', '.9'); rect.addEventListener('pointerenter', (e) => showTooltip(e, options.categories[i], [[s.name, options.format ? options.format(v) : fmt(v)]])); rect.addEventListener('pointerleave', hideTooltip); svg.appendChild(rect); }); });
-          options.categories.forEach((cat, i) => { if (series.every((s) => s.values[i] == null)) { const missing = text(svg, xPositions[i], g.y1 - 10, options.missingLabel || 'Not recorded', 'value-label'); missing.setAttribute('text-anchor', 'middle'); missing.setAttribute('fill', 'var(--warning)'); } });
+      function dualAxisLineChart(id, legendId, leftSeries, rightSeries, options = {}) {
+        const svg = document.getElementById(id); const series = [...leftSeries, ...rightSeries.map((s) => ({ ...s, axis: 'right' }))]; const draw = () => {
+          const g = svgBase(svg, 800, options.height || 350, 64); const xPositions = xPositionsFor(g, dates.length, dateTimes.map((t) => new Date(t).toISOString().slice(0, 10)));
+          const leftY = scale(options.left.domain[0], options.left.domain[1], g.y1, g.y0); const rightY = scale(options.right.domain[0], options.right.domain[1], g.y1, g.y0);
+          addAxes(svg, g, xPositions, options.left.ticks, leftY, options.left.title, options.xTitle || 'Check-in date', labels, options.left.tickFormat, colors[(leftSeries[0].colorIndex ?? 0) % colors.length]);
+          addRightAxis(svg, g, options.right.ticks, rightY, options.right.title, options.right.tickFormat, colors[(rightSeries[0].colorIndex ?? 0) % colors.length]);
+          series.forEach((s, si) => {
+            if (s.visible === false) return;
+            const y = s.axis === 'right' ? rightY : leftY; const color = colors[(s.colorIndex ?? si) % colors.length]; const pts = s.values.map((v, i) => v == null ? null : [xPositions[i], y(v)]).filter(Boolean);
+            if (pts.length > 1) { const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('class', 'series-line'); path.setAttribute('stroke', color); path.setAttribute('d', pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ')); svg.appendChild(path); }
+            s.values.forEach((v, i) => { if (v == null) return; const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('class', 'point'); c.setAttribute('cx', xPositions[i]); c.setAttribute('cy', y(v)); c.setAttribute('r', '5'); c.setAttribute('fill', color); c.addEventListener('pointerenter', (e) => showTooltip(e, dateLabel(i), [[s.name, s.axis === 'right' ? options.right.format(v) : options.left.format(v)]])); c.addEventListener('pointerleave', hideTooltip); svg.appendChild(c); });
+          });
+          const hit = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); hit.setAttribute('x', g.x0); hit.setAttribute('y', g.y0); hit.setAttribute('width', g.x1 - g.x0); hit.setAttribute('height', g.y1 - g.y0); hit.setAttribute('fill', 'transparent'); hit.setAttribute('data-chart-hit', 'true'); hit.addEventListener('pointermove', (e) => { const rect = svg.getBoundingClientRect(); const px = e.clientX - rect.left; const viewX = px * g.width / rect.width; let nearest = 0; xPositions.forEach((xv, i) => { if (Math.abs(xv - viewX) < Math.abs(xPositions[nearest] - viewX)) nearest = i; }); const rows = series.filter((s) => s.visible !== false && s.values[nearest] != null).map((s) => [s.name, s.axis === 'right' ? options.right.format(s.values[nearest]) : options.left.format(s.values[nearest])]); showTooltip(e, dateLabel(nearest), rows); }); hit.addEventListener('pointerleave', hideTooltip); svg.appendChild(hit);
         }; legend(legendId, series, draw); draw(); window.addEventListener('resize', draw);
       }
       function stackedChart(id, legendId, series, options = {}) {
@@ -234,14 +254,16 @@
       lineChart('power-chart', 'power-legend', power, { yTitle: 'Total power (M)', format: fmtM, tickFormat: fmtM, domain: [35000000, 100000000], ticks: [40000000, 60000000, 80000000, 100000000] });
 
       const breakdown = [
-        { name: 'Troops', values: [13542086, 24047674, 31949599, 42717906, 47996213] }, { name: 'Heroes', values: [10887568, 14222891, 16706570, 17725937, 17914448] },
-        { name: 'Governor gear', values: [6522400, 8610800, 9448800, 9550800, 10494000] }, { name: 'Buildings', values: [2944986, 3574466, 4101254, 4534983, 4849195] },
-        { name: 'Tech', values: [2652677, 3028942, 3128662, 3263282, 3272382] }, { name: 'Pets', values: [2076120, 2424720, 4751640, 5531040, 5691000] },
-        { name: 'Masters', values: [null, null, 2371800, 3022600, 3561800] }
+        { name: 'Troops', colorIndex: 0, values: [13542086, 24047674, 31949599, 42717906, 47996213] }, { name: 'Heroes', colorIndex: 1, values: [10887568, 14222891, 16706570, 17725937, 17914448] },
+        { name: 'Governor gear', colorIndex: 2, values: [6522400, 8610800, 9448800, 9550800, 10494000] }, { name: 'Buildings', colorIndex: 3, values: [2944986, 3574466, 4101254, 4534983, 4849195] },
+        { name: 'Tech', colorIndex: 4, values: [2652677, 3028942, 3128662, 3263282, 3272382] }, { name: 'Pets', colorIndex: 5, values: [2076120, 2424720, 4751640, 5531040, 5691000] },
+        { name: 'Masters', colorIndex: 6, values: [null, null, 2371800, 3022600, 3561800] }
       ];
-      barChart('breakdown-chart', 'breakdown-legend', breakdown, { categories: ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18'], timeValues: dates, yTitle: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 50000000], ticks: [0, 10000000, 20000000, 30000000, 40000000, 50000000], missingLabel: 'Not refreshed', height: 350 });
+      const snapshotOptions = { yTitle: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 50000000], ticks: [0, 10000000, 20000000, 30000000, 40000000, 50000000], height: 350 };
+      lineChart('other-power-chart', 'other-power-legend', breakdown.slice(1), snapshotOptions);
       const troopTotals = [{ name: 'Total troop roster', values: [333200, 491323, 612897, 647264, 676003] }];
-      lineChart('troop-chart', 'troop-legend', troopTotals, { yTitle: 'Total troops', format: fmt, tickFormat: fmt, domain: [0, 750000], ticks: [0, 250000, 500000, 750000] });
+      troopTotals[0].colorIndex = 1;
+      dualAxisLineChart('troop-chart', 'troop-legend', breakdown.slice(0, 1), troopTotals, { left: { title: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 50000000], ticks: [0, 10000000, 20000000, 30000000, 40000000, 50000000] }, right: { title: 'Total troops', format: fmt, tickFormat: fmt, domain: [0, 750000], ticks: [0, 250000, 500000, 750000] }, height: 350 });
 
       const troopComposition = [
         { name: 'Infantry', values: [113010, 165979, 209995, 222125, 231240] }, { name: 'Cavalry', values: [101670, 149603, 185266, 196388, 206002] }, { name: 'Archers', values: [118598, 175741, 217636, 228751, 238761] }
