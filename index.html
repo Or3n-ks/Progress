@@ -126,8 +126,8 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Mystic Trial</h2><span class="note">verified score and rank over time</span></div>
-        <div class="chart-wrap"><svg id="mystic-chart" role="img" aria-label="Mystic Trial score and leaderboard position"></svg><div class="legend" id="mystic-legend"></div></div>
+        <div class="panel-head"><h2>Mystic Trial</h2><span class="note">verified stages and rank over time · dual axis</span></div>
+        <div class="chart-wrap"><svg id="mystic-chart" role="img" aria-label="Mystic Trial stages and leaderboard position"></svg><div class="legend" id="mystic-legend"></div></div>
         <div class="single-point">September 18 Mystic Trial: 848 stages, rank 93. Earlier verified reading: September 12 — 815 stages, rank 109.</div>
       </article>
 
@@ -279,7 +279,8 @@
       lineChart('hero-chart', 'hero-legend', hero, { yTitle: 'Displayed power (M)', domain: [0, 2.2], ticks: [0, .5, 1, 1.5, 2], format: (v) => v.toFixed(2) + 'M' });
 
       const mystic = [{ name: 'Total Stages / score', values: [null, null, 801, 815, 848] }, { name: 'Leaderboard position', values: [null, null, 103, 109, 93] }];
-      lineChart('mystic-chart', 'mystic-legend', mystic, { yTitle: 'Displayed value', domain: [0, 900], ticks: [0, 400, 800], format: fmt });
+      mystic[1].colorIndex = 1;
+      dualAxisLineChart('mystic-chart', 'mystic-legend', [mystic[0]], [mystic[1]], { left: { title: 'Total stages', format: fmt, tickFormat: fmt, domain: [0, 900], ticks: [0, 400, 800] }, right: { title: 'Leaderboard position', format: fmt, tickFormat: fmt, domain: [0, 120], ticks: [0, 40, 80, 120] }, height: 270 });
 
       const combat = [{ name: 'VIP', values: [6, 7, 7, 7, 7] }, { name: 'Kill count (M)', values: [4.931002, 6.654043, 7.9, 9.7, 9.806438] }, { name: 'Victories / 100', values: [3.27, 5.55, 7.65, null, 10.33] }, { name: 'Losses / 100', values: [2.51, 3.53, null, null, null] }];
       lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, 10], ticks: [0, 2, 4, 6, 8, 10], format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
