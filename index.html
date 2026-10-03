@@ -89,7 +89,7 @@
       <div>
         <h1>Kingshot progress</h1>
         <p class="subtitle">Verified snapshots from the progress journal · hover charts for exact values</p>
-        <p class="subtitle"><strong>Today:</strong> Total power 103.07M · troops 575.5K/766.4K · Mythic heroes: Zoe 1.98M · Marlin 1.94M · Petra 1.94M · Jabel 1.14M · Mystic Trial last verified at 896 stages, rank 80 · VIP 8</p>
+        <p class="subtitle"><strong>Today:</strong> Total power 103.07M · troops 575.5K/766.4K · Mythic heroes: Zoe 1.98M · Marlin 1.94M · Petra 1.94M · Jabel 1.14M · Mystic Trial 905 stages, rank 85 · VIP 8</p>
       </div>
       <div class="date-stamp">Latest check-in<br><strong>October 3, 2026</strong></div>
     </header>
@@ -128,7 +128,7 @@
       <article class="panel">
         <div class="panel-head"><h2>Mystic Trial</h2><span class="note">verified stages and rank over time · dual axis</span></div>
         <div class="chart-wrap"><svg id="mystic-chart" role="img" aria-label="Mystic Trial stages and leaderboard position"></svg><div class="legend" id="mystic-legend"></div></div>
-        <div class="single-point">October 3 Mystic Trial was not captured. Latest verified reading: September 26 — 896 stages, rank 80.</div>
+        <div class="single-point">October 3 Mystic Trial: 905 stages, rank 85, verified from the follow-up leaderboard screenshot.</div>
       </article>
 
       <article class="panel">
@@ -139,7 +139,7 @@
 
       <div class="footnotes">
         <p>Source: <code>kingshot-progress-journal.md</code>. Blank points mean the journal did not verify that metric on that date.</p>
-        <p>Latest verified Mystic Trial reading: position <strong>80</strong> · Total Stages <strong>896</strong> on September 26. October 3 was not captured.</p>
+        <p>Latest verified Mystic Trial reading: position <strong>85</strong> · Total Stages <strong>905</strong> on October 3.</p>
       </div>
     </section>
   </main>
@@ -279,9 +279,9 @@
       ];
       lineChart('hero-chart', 'hero-legend', hero, { yTitle: 'Displayed power (M)', domain: [0, 2.2], ticks: [0, .5, 1, 1.5, 2], format: (v) => v.toFixed(2) + 'M' });
 
-      const mystic = [{ name: 'Total Stages / score', values: [null, null, 801, 815, 848, 896, null] }, { name: 'Leaderboard position', values: [null, null, 103, 109, 93, 80, null] }];
+      const mystic = [{ name: 'Total Stages / score', values: [null, null, 801, 815, 848, 896, 905] }, { name: 'Leaderboard position', values: [null, null, 103, 109, 93, 80, 85] }];
       mystic[1].colorIndex = 1;
-      dualAxisLineChart('mystic-chart', 'mystic-legend', [mystic[0]], [mystic[1]], { left: { title: 'Total stages', format: fmt, tickFormat: fmt, domain: [0, 900], ticks: [0, 400, 800] }, right: { title: 'Leaderboard position', format: fmt, tickFormat: fmt, domain: [0, 120], ticks: [0, 40, 80, 120] }, height: 270 });
+      dualAxisLineChart('mystic-chart', 'mystic-legend', [mystic[0]], [mystic[1]], { left: { title: 'Total stages', format: fmt, tickFormat: fmt, domain: [0, 1000], ticks: [0, 400, 800, 1000] }, right: { title: 'Leaderboard position', format: fmt, tickFormat: fmt, domain: [0, 120], ticks: [0, 40, 80, 120] }, height: 270 });
 
       const combat = [{ name: 'VIP', values: [6, 7, 7, 7, 7, 7, 8] }, { name: 'Kill count (M)', values: [4.931002, 6.654043, 7.9, 9.7, 9.806438, 10.759084, 10.853519] }, { name: 'Victories / 100', values: [3.27, 5.55, 7.65, null, 10.33, 11.19, 11.29] }, { name: 'Losses / 100', values: [2.51, 3.53, null, null, null, 2.94691, 2.94691] }];
       lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, 10], ticks: [0, 2, 4, 6, 8, 10], format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
