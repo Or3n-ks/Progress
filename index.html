@@ -89,57 +89,57 @@
       <div>
         <h1>Kingshot progress</h1>
         <p class="subtitle">Verified snapshots from the progress journal · hover charts for exact values</p>
-        <p class="subtitle"><strong>Today:</strong> Total power 103.07M · troops 575.5K/766.4K · Mythic heroes: Zoe 1.98M · Marlin 1.94M · Petra 1.94M · Jabel 1.14M · Mystic Trial 905 stages, rank 85 · VIP 8</p>
+        <p class="subtitle"><strong>Today:</strong> Total power 117.12M · troops 106.2K/869.5K · Mythic heroes: Zoe 2.21M · Petra 2.16M · Marlin 1.95M · Jabel 1.15M · Mystic Trial 912 stages, rank 95 · VIP 8</p>
       </div>
-      <div class="date-stamp">Latest check-in<br><strong>October 3, 2026</strong></div>
+      <div class="date-stamp">Latest check-in<br><strong>October 10, 2026</strong></div>
     </header>
 
     <section class="grid">
       <article class="panel wide">
         <div class="panel-head"><h2>Total power</h2><span class="note">account total · millions</span></div>
         <div class="chart-wrap"><svg id="power-chart" role="img" aria-label="Total account power over time"></svg><div class="legend" id="power-legend"></div></div>
-        <div class="single-point">October 3 snapshot: 103.07M verified from the direct Kingshot app.</div>
+        <div class="single-point">October 10 snapshot: 117.12M verified from the direct Kingshot app.</div>
       </article>
 
       <article class="panel split-row">
         <div class="panel-head"><h2>Troop power &amp; growth</h2><span class="note">power + total roster · dual axis</span></div>
         <div class="chart-wrap"><svg id="troop-chart" role="img" aria-label="Troop power and total troop roster over time"></svg><div class="legend" id="troop-legend"></div></div>
-        <div class="single-point">October 3: 54.379M troop power · 766,371 total troops; 575,533 currently in town, 6/209.3K injured, and 5/6 marches active.</div>
+        <div class="single-point">October 10: 64.842M troop power · 869,538 total troops · 106.2K in town · 140/214.8K injured · march queue 0/6 · 6/6 active marches.</div>
       </article>
 
       <article class="panel split-row">
         <div class="panel-head"><h2>Power breakdown, troops excluded</h2><span class="note">non-troop power over time</span></div>
         <div class="chart-wrap"><svg id="other-power-chart" role="img" aria-label="Non-troop power over time"></svg><div class="legend" id="other-power-legend"></div></div>
-        <div class="single-point">October 3 breakdown: categories sum exactly to the profile total of 103.074M.</div>
+        <div class="single-point">October 10 breakdown: categories sum exactly to the profile total of 117.120M. Scale remains 0–25M with 5M intervals.</div>
       </article>
 
       <article class="panel wide">
         <div class="panel-head"><h2>Troop composition</h2><span class="note">roster counts by type</span></div>
         <div class="chart-wrap"><svg id="troop-composition-chart" role="img" aria-label="Listed troop composition by type"></svg><div class="legend" id="troop-composition-legend"></div></div>
-        <div class="callout">The chart uses total troop rosters, not troops currently in town. October 3’s roster is 766,371 troops.</div>
+        <div class="callout">The chart uses total troop rosters, not troops currently in town. October 10 roster: 327,220 Infantry · 248,671 Cavalry · 293,647 Archers.</div>
       </article>
 
       <article class="panel wide">
         <div class="panel-head"><h2>Mythic hero power</h2><span class="note">displayed power only</span></div>
         <div class="chart-wrap"><svg id="hero-chart" role="img" aria-label="Displayed power for mythic heroes"></svg><div class="legend" id="hero-legend"></div></div>
-        <div class="single-point">October 3 readings: Zoe 1.98M · Marlin 1.94M · Petra 1.94M · Jabel 1.14M. Earlier points are shown only where previously verified.</div>
+        <div class="single-point">October 10 readings: Zoe 2.21M · Petra 2.16M · Marlin 1.95M · Jabel 1.15M. Earlier points are shown only where previously verified.</div>
       </article>
 
       <article class="panel">
         <div class="panel-head"><h2>Mystic Trial</h2><span class="note">verified stages and rank over time · dual axis</span></div>
         <div class="chart-wrap"><svg id="mystic-chart" role="img" aria-label="Mystic Trial stages and leaderboard position"></svg><div class="legend" id="mystic-legend"></div></div>
-        <div class="single-point">October 3 Mystic Trial: 905 stages, rank 85, verified from the follow-up leaderboard screenshot.</div>
+        <div class="single-point">October 10 Mystic Trial: 912 stages, rank 95, verified from the user-provided leaderboard screenshot.</div>
       </article>
 
       <article class="panel">
         <div class="panel-head"><h2>Combat account metrics</h2><span class="note">latest profile readings</span></div>
         <div class="chart-wrap"><svg id="combat-chart" role="img" aria-label="VIP and combat metrics over time"></svg><div class="legend" id="combat-legend"></div></div>
-        <div class="single-point">October 3: 10,853,519 kills · 294,691 losses · 1,129 victories · 536 battle losses · 67.8% win ratio.</div>
+        <div class="single-point">October 10: 11,779,135 kills · 294,691 losses · 1,295 victories · 565 battle losses · 69.6% win ratio. Attacker: 446/355; defense: 849/210; scouts: 46.</div>
       </article>
 
       <div class="footnotes">
         <p>Source: <code>kingshot-progress-journal.md</code>. Blank points mean the journal did not verify that metric on that date.</p>
-        <p>Latest verified Mystic Trial reading: position <strong>85</strong> · Total Stages <strong>905</strong> on October 3.</p>
+        <p>Latest verified Mystic Trial reading: position <strong>95</strong> · Total Stages <strong>912</strong> on October 10.</p>
       </div>
     </section>
   </main>
@@ -149,8 +149,8 @@
     (() => {
       const root = document.getElementById('kingshot-dashboard');
       const tooltip = document.getElementById('tooltip');
-      const dates = ['2026-07-15', '2026-08-11', '2026-09-06', '2026-09-12', '2026-09-18', '2026-09-26', '2026-10-03'];
-      const labels = ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18', 'Sep 26', 'Oct 3'];
+      const dates = ['2026-07-15', '2026-08-11', '2026-09-06', '2026-09-12', '2026-09-18', '2026-09-26', '2026-10-03', '2026-10-10'];
+      const labels = ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18', 'Sep 26', 'Oct 3', 'Oct 10'];
       const colors = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)'];
       const cssColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name.replace('var(', '').replace(')', '')).trim();
       const fmt = (value) => value == null ? '—' : Number(value).toLocaleString('en-US');
@@ -251,40 +251,40 @@
       function stackedChart(id, legendId, series, options = {}) {
         const svg = document.getElementById(id); const draw = () => { const g = svgBase(svg, 760, options.height || 270); const preliminaryPositions = xPositionsFor(g, options.categories.length, options.timeValues); const gap = minimumGap(preliminaryPositions, (g.x1 - g.x0) / Math.max(1, options.categories.length)); const groupW = gap * .64; const xPositions = xPositionsFor(g, options.categories.length, options.timeValues, options.timeValues ? groupW / 2 : 0); const totals = options.categories.map((_, i) => series.reduce((sum, s) => sum + (s.values[i] || 0), 0)); const [d0, d1] = padded(totals, 0); const y = scale(d0, d1, g.y1, g.y0); addAxes(svg, g, xPositions, [0, d1 / 2, d1].map((v) => Math.round(v)), y, options.yTitle || 'Total', options.xTitle || 'Snapshot', options.categories, options.tickFormat || ((v) => String(v))); options.categories.forEach((cat, i) => { let cumulative = 0; series.forEach((s, si) => { if (s.visible === false || !s.values[i]) return; const value = s.values[i]; const top = y(cumulative + value); const bottom = y(cumulative); const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); rect.setAttribute('x', xPositions[i] - groupW / 2); rect.setAttribute('y', top); rect.setAttribute('width', groupW); rect.setAttribute('height', bottom - top); rect.setAttribute('fill', colors[si % colors.length]); rect.addEventListener('pointerenter', (e) => showTooltip(e, cat, [[s.name, fmt(value)], ['Listed total', fmt(totals[i])] ])); rect.addEventListener('pointerleave', hideTooltip); svg.appendChild(rect); cumulative += value; }); if (totals[i]) text(svg, xPositions[i], y(totals[i]) - 8, fmt(totals[i]), 'value-label').setAttribute('text-anchor', 'middle'); else { const missing = text(svg, xPositions[i], g.y1 - 10, options.missingLabel || 'Not recorded', 'value-label'); missing.setAttribute('text-anchor', 'middle'); missing.setAttribute('fill', 'var(--warning)'); } }); }; legend(legendId, series, draw); draw(); window.addEventListener('resize', draw); }
 
-      const power = [{ name: 'Total power', values: [38625799, 55909493, 72458325, 86348066, 93779038, 98704759, 103074472] }];
-      lineChart('power-chart', 'power-legend', power, { yTitle: 'Total power (M)', format: fmtM, tickFormat: fmtM, domain: [35000000, 110000000], ticks: [40000000, 60000000, 80000000, 100000000, 110000000] });
+      const power = [{ name: 'Total power', values: [38625799, 55909493, 72458325, 86348066, 93779038, 98704759, 103074472, 117119770] }];
+      lineChart('power-chart', 'power-legend', power, { yTitle: 'Total power (M)', format: fmtM, tickFormat: fmtM, domain: [35000000, 120000000], ticks: [40000000, 60000000, 80000000, 100000000, 120000000] });
 
       const breakdown = [
-        { name: 'Troops', colorIndex: 0, values: [13542086, 24047674, 31949599, 42717906, 47996213, 51340952, 54379259] }, { name: 'Heroes', colorIndex: 1, values: [10887568, 14222891, 16706570, 17725937, 17914448, 18512102, 18594928] },
-        { name: 'Governor gear', colorIndex: 2, values: [6522400, 8610800, 9448800, 9550800, 10494000, 10902000, 10902000] }, { name: 'Buildings', colorIndex: 3, values: [2944986, 3574466, 4101254, 4534983, 4849195, 5080923, 5195823] },
-        { name: 'Tech', colorIndex: 4, values: [2652677, 3028942, 3128662, 3263282, 3272382, 3272382, 3312582] }, { name: 'Pets', colorIndex: 5, values: [2076120, 2424720, 4751640, 5531040, 5691000, 5923440, 6054480] },
-        { name: 'Masters', colorIndex: 6, values: [null, null, 2371800, 3022600, 3561800, 3672960, 4635400] }
+        { name: 'Troops', colorIndex: 0, values: [13542086, 24047674, 31949599, 42717906, 47996213, 51340952, 54379259, 64841533] }, { name: 'Heroes', colorIndex: 1, values: [10887568, 14222891, 16706570, 17725937, 17914448, 18512102, 18594928, 19110507] },
+        { name: 'Governor gear', colorIndex: 2, values: [6522400, 8610800, 9448800, 9550800, 10494000, 10902000, 10902000, 11463360] }, { name: 'Buildings', colorIndex: 3, values: [2944986, 3574466, 4101254, 4534983, 4849195, 5080923, 5195823, 5629193] },
+        { name: 'Tech', colorIndex: 4, values: [2652677, 3028942, 3128662, 3263282, 3272382, 3272382, 3312582, 3408777] }, { name: 'Pets', colorIndex: 5, values: [2076120, 2424720, 4751640, 5531040, 5691000, 5923440, 6054480, 6376800] },
+        { name: 'Masters', colorIndex: 6, values: [null, null, 2371800, 3022600, 3561800, 3672960, 4635400, 6289600] }
       ];
       const snapshotOptions = { yTitle: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 25000000], ticks: [0, 5000000, 10000000, 15000000, 20000000, 25000000], height: 350 };
       lineChart('other-power-chart', 'other-power-legend', breakdown.slice(1), snapshotOptions);
-      const troopTotals = [{ name: 'Total troop roster', values: [333200, 491323, 612897, 647264, 676003, 723112, 766371] }];
+      const troopTotals = [{ name: 'Total troop roster', values: [333200, 491323, 612897, 647264, 676003, 723112, 766371, 869538] }];
       troopTotals[0].colorIndex = 1;
-      dualAxisLineChart('troop-chart', 'troop-legend', breakdown.slice(0, 1), troopTotals, { left: { title: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 60000000], ticks: [0, 10000000, 20000000, 30000000, 40000000, 50000000, 60000000] }, right: { title: 'Total troops', format: fmt, tickFormat: fmt, domain: [0, 800000], ticks: [0, 250000, 500000, 750000, 800000] }, height: 350 });
+      dualAxisLineChart('troop-chart', 'troop-legend', breakdown.slice(0, 1), troopTotals, { left: { title: 'Power', format: fmtM, tickFormat: fmtM, domain: [0, 70000000], ticks: [0, 10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000] }, right: { title: 'Total troops', format: fmt, tickFormat: fmt, domain: [0, 900000], ticks: [0, 250000, 500000, 750000, 900000] }, height: 350 });
 
       const troopComposition = [
-        { name: 'Infantry', values: [113010, 165979, 209995, 222125, 231240, 247654, 262868] }, { name: 'Cavalry', values: [101670, 149603, 185266, 196388, 206002, 221356, 234285] }, { name: 'Archers', values: [118598, 175741, 217636, 228751, 238761, 254102, 269218] }
+        { name: 'Infantry', values: [113010, 165979, 209995, 222125, 231240, 247654, 262868, 327220] }, { name: 'Cavalry', values: [101670, 149603, 185266, 196388, 206002, 221356, 234285, 248671] }, { name: 'Archers', values: [118598, 175741, 217636, 228751, 238761, 254102, 269218, 293647] }
       ];
-      stackedChart('troop-composition-chart', 'troop-composition-legend', troopComposition, { categories: ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18', 'Sep 26', 'Oct 3'], timeValues: dates, yTitle: 'Total troops', xTitle: 'Snapshot' });
+      stackedChart('troop-composition-chart', 'troop-composition-legend', troopComposition, { categories: ['Jul 15', 'Aug 11', 'Sep 6', 'Sep 12', 'Sep 18', 'Sep 26', 'Oct 3', 'Oct 10'], timeValues: dates, yTitle: 'Total troops', xTitle: 'Snapshot' });
 
       const hero = [
-        { name: 'Zoe', values: [.9507, null, 1.8746, 1.928027, 1.932752, 1.947152, 1.982065] },
-        { name: 'Marlin', values: [null, null, null, 1.7972, 1.80602, 1.91082, 1.940995] },
-        { name: 'Petra', values: [null, null, null, 1.70464, 1.31187, 1.935215, 1.935215] },
-        { name: 'Jabel', values: [1.21265, null, 1.660577, 1.12972, 1.86713, 1.33884, 1.13592] }
+        { name: 'Zoe', values: [.9507, null, 1.8746, 1.928027, 1.932752, 1.947152, 1.982065, 2.208959] },
+        { name: 'Marlin', values: [null, null, null, 1.7972, 1.80602, 1.91082, 1.940995, 1.949152] },
+        { name: 'Petra', values: [null, null, null, 1.70464, 1.31187, 1.935215, 1.935215, 2.160965] },
+        { name: 'Jabel', values: [1.21265, null, 1.660577, 1.12972, 1.86713, 1.33884, 1.13592, 1.15092] }
       ];
-      lineChart('hero-chart', 'hero-legend', hero, { yTitle: 'Displayed power (M)', domain: [0, 2.2], ticks: [0, .5, 1, 1.5, 2], format: (v) => v.toFixed(2) + 'M' });
+      lineChart('hero-chart', 'hero-legend', hero, { yTitle: 'Displayed power (M)', domain: [0, 2.5], ticks: [0, .5, 1, 1.5, 2, 2.5], format: (v) => v.toFixed(2) + 'M' });
 
-      const mystic = [{ name: 'Total Stages / score', values: [null, null, 801, 815, 848, 896, 905] }, { name: 'Leaderboard position', values: [null, null, 103, 109, 93, 80, 85] }];
+      const mystic = [{ name: 'Total Stages / score', values: [null, null, 801, 815, 848, 896, 905, 912] }, { name: 'Leaderboard position', values: [null, null, 103, 109, 93, 80, 85, 95] }];
       mystic[1].colorIndex = 1;
       dualAxisLineChart('mystic-chart', 'mystic-legend', [mystic[0]], [mystic[1]], { left: { title: 'Total stages', format: fmt, tickFormat: fmt, domain: [0, 1000], ticks: [0, 400, 800, 1000] }, right: { title: 'Leaderboard position', format: fmt, tickFormat: fmt, domain: [0, 120], ticks: [0, 40, 80, 120] }, height: 270 });
 
-      const combat = [{ name: 'VIP', values: [6, 7, 7, 7, 7, 7, 8] }, { name: 'Kill count (M)', values: [4.931002, 6.654043, 7.9, 9.7, 9.806438, 10.759084, 10.853519] }, { name: 'Victories / 100', values: [3.27, 5.55, 7.65, null, 10.33, 11.19, 11.29] }, { name: 'Losses / 100', values: [2.51, 3.53, null, null, null, 2.94691, 2.94691] }];
-      lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, 10], ticks: [0, 2, 4, 6, 8, 10], format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
+      const combat = [{ name: 'VIP', values: [6, 7, 7, 7, 7, 7, 8, 8] }, { name: 'Kill count (M)', values: [4.931002, 6.654043, 7.9, 9.7, 9.806438, 10.759084, 10.853519, 11.779135] }, { name: 'Victories / 100', values: [3.27, 5.55, 7.65, null, 10.33, 11.19, 11.29, 12.95] }, { name: 'Losses / 100', values: [2.51, 3.53, null, null, null, 2.94691, 2.94691, 2.94691] }];
+      lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, 14], ticks: [0, 2, 4, 6, 8, 10, 12, 14], format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
 
     })();
   </script>
