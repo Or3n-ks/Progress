@@ -284,7 +284,9 @@
       dualAxisLineChart('mystic-chart', 'mystic-legend', [mystic[0]], [mystic[1]], { left: { title: 'Total stages', format: fmt, tickFormat: fmt, domain: [0, 1000], ticks: [0, 400, 800, 1000] }, right: { title: 'Leaderboard position', format: fmt, tickFormat: fmt, domain: [0, 120], ticks: [0, 40, 80, 120] }, height: 270 });
 
       const combat = [{ name: 'VIP', values: [6, 7, 7, 7, 7, 7, 8, 8, 8, 8] }, { name: 'Kill count (M)', values: [4.931002, 6.654043, 7.9, 9.7, 9.806438, 10.759084, 10.853519, 11.779135, 11.849097, 13.715447] }, { name: 'Victories / 100', values: [3.27, 5.55, 7.65, null, 10.33, 11.19, 11.29, 12.95, 12.97, 15.93] }, { name: 'Losses / 100', values: [2.51, 3.53, null, null, null, 2.94691, 2.94691, 2.94691, 2.94691, 3.11691] }];
-      lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, 14], ticks: [0, 2, 4, 6, 8, 10, 12, 14], format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
+      const combatMax = Math.ceil(Math.max(...combat.flatMap((series) => series.values.filter((value) => value != null))) * 1.1 / 2) * 2;
+      const combatTicks = Array.from({ length: combatMax / 2 + 1 }, (_, i) => i * 2);
+      lineChart('combat-chart', 'combat-legend', combat, { yTitle: 'Normalized metric', domain: [0, combatMax], ticks: combatTicks, format: (v) => v < 10 ? v.toFixed(v < 10 && v % 1 ? 2 : 0) : fmt(v) });
 
     })();
   </script>
